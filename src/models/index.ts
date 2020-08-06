@@ -7,3 +7,4 @@ export * from './producto-personalizado.model';
 export * from './subcategoria.model';
 export * from './recetario.model';
 export * from './categorias-inventario.model';
+export * from './producciones.model';

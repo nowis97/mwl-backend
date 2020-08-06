@@ -7,3 +7,4 @@ export * from './tipo-clientes.repository';
 export * from './subcategoria.repository';
 export * from './recetario.repository';
 export * from './categorias-inventario.repository';
+export * from './producciones.repository';

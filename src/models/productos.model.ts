@@ -58,6 +58,7 @@ export class Productos extends Entity {
 
   @property({
     type: 'string',
+    default:'Creado'
   })
   estado?: string;
 

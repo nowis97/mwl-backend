@@ -44,7 +44,7 @@ export class ProductosController {
         'application/json': {
           schema: {
             type:'object',
-            required:["nombre","categoria","subCategoria","inventario"],
+            required:["nombre","categoria","subCategoria"],
             properties:{
               "nombre":{type:"string"},
               "precio":{type:"number"},

@@ -1,4 +1,5 @@
 import {Entity, model, property} from '@loopback/repository';
+import {Historial, MateriaPrimaNecesaria} from '../types';
 
 @model()
 export class Producciones extends Entity {
@@ -15,7 +16,14 @@ export class Producciones extends Entity {
   cantidadProducir: number;
 
   @property({
+    type:'number',
+    default:0,
+  })
+  cantidadProducida?:number
+
+  @property({
     type: 'date',
+    defaultFn:"now"
   })
   fechaProduccion?: string;
 
@@ -23,7 +31,7 @@ export class Producciones extends Entity {
     type: 'array',
     itemType: 'object',
   })
-  historial?: object[];
+  historial?: Historial[];
 
   @property({
     type: 'array',

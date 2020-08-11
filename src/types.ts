@@ -30,8 +30,23 @@ export interface Inventarios {
   cantidad:number
 }
 
+
+
 export interface RequestCategorias {
   id?: Array<string>,
   nombre:string,
   descripcion:string
+}
+
+export  interface Historial{
+  cantidadProducida:number,
+  fecha:string,
+  idProduccion:string
+}
+
+export interface MateriaPrimaNecesaria{
+  materiaPrima:string,
+  cantidadTotal:number,
+  unidadMedida:string,
+  cantidadProducida:number
 }

@@ -11,3 +11,4 @@ export * from './subcategorias.controller';
 export * from './recetarios.controller';
 export * from './categorias-inventario.controller';
 export * from './producciones.controller';
+export * from './productos-recetario.controller';

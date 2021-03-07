@@ -12,3 +12,8 @@ export * from './recetarios.controller';
 export * from './categorias-inventario.controller';
 export * from './producciones.controller';
 export * from './productos-recetario.controller';
+export * from './usuarios.controller';
+export * from './pedidos-clientes.controller';
+export * from './pedidos.controller';
+export * from './recursos.controller';
+export * from './roles.controller';

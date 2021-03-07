@@ -3,10 +3,11 @@ import {Entity, model, property} from '@loopback/repository';
 @model({settings: {strict: false}})
 export class ProductoPersonalizado extends Entity {
   @property({
-    type: 'object',
-    required: true,
+    type: 'array',
+    itemType:'object',
+    required: false,
   })
-  campos: object;
+  campos: object[];
 
   @property({
     type: 'string',

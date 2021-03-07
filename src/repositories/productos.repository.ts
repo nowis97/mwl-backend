@@ -25,4 +25,7 @@ export class ProductosRepository extends DefaultCrudRepository<
     this.productoPersonalizado = this.createHasOneRepositoryFactoryFor('productoPersonalizado', productoPersonalizadoRepositoryGetter);
     this.registerInclusionResolver('productoPersonalizado', this.productoPersonalizado.inclusionResolver);
   }
+
+
+
 }

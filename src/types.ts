@@ -4,7 +4,7 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {RequestHandler} from 'express-serve-static-core';
-import {ProductoPersonalizado} from './models';
+import {Pedidos, ProductoPersonalizado} from './models';
 
 export type FileUploadHandler = RequestHandler;
 
@@ -21,7 +21,9 @@ export interface Producto {
   productoPersonalizado?:ProductoPersonalizado,
   campos?:Array<object>,
   receta:string,
-  subproductos:Array<object>
+  subProductos:Array<Subproducto>,
+  porcentajeGanancia:number,
+  costo?:number
 
 }
 
@@ -30,6 +32,18 @@ export interface Inventarios {
   cantidad:number
 }
 
+export interface Subproducto{
+  id:string,
+  cantidad:number
+
+}
+
+export interface ProductoPedido{
+  id?:string
+  idProducto?:string
+  cantidad?:number
+
+}
 
 
 export interface RequestCategorias {
@@ -40,8 +54,8 @@ export interface RequestCategorias {
 
 export  interface Historial{
   cantidadProducida:number,
-  fecha:string,
-  idProduccion:string
+  fecha:Date,
+  idSubproducto:string
 }
 
 export interface MateriaPrimaNecesaria{
@@ -49,4 +63,30 @@ export interface MateriaPrimaNecesaria{
   cantidadTotal:number,
   unidadMedida:string,
   cantidadProducida:number
+}
+
+export interface SubproductoProduccion {
+  idProducto:string,
+  cantidadTotal:number,
+  subproductosProducir:Subproducto[],
+  fechaEntrega:string,
+  enProduccion:boolean,
+  cantidadEnProduccion?:number
+  cantidadFaltante?:number
+
+}
+
+export interface SubProductosEnProduccion{
+  pedidos:Pedidos[],
+  idsSubproductos:string[],
+  idProduccion:string
+}
+
+export interface Estado {
+  estado:string
+}
+
+export interface Permiso{
+  recurso:string,
+  permisos :string[]
 }

@@ -11,9 +11,9 @@ export class Recetario extends Entity {
 
   @property({
     type: 'string',
-    required: true,
+    required: false,
   })
-  detalles: string;
+  detalles?: string;
 
   @property({
     type: 'string',

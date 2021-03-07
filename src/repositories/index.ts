@@ -8,3 +8,7 @@ export * from './subcategoria.repository';
 export * from './recetario.repository';
 export * from './categorias-inventario.repository';
 export * from './producciones.repository';
+export * from './pedidos.repository';
+export * from './recursos.repository';
+export * from './roles.repository';
+export * from './usuario.repository';

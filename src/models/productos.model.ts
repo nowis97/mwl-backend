@@ -1,6 +1,7 @@
 import {Entity, model, property, hasOne, belongsTo} from '@loopback/repository';
 import {ProductoPersonalizado} from './producto-personalizado.model';
 import {Recetario} from './recetario.model';
+import {Inventarios} from '../types';
 
 @model()
 export class Productos extends Entity {
@@ -20,6 +21,7 @@ export class Productos extends Entity {
   @property({
     type: 'number',
     required: false,
+    default:0
   })
   stock?: number;
 
@@ -50,6 +52,7 @@ export class Productos extends Entity {
     required: true,
   })
   subCategoria: string;
+
   @property({
     type: 'string',
     default: 'Creado'
@@ -68,7 +71,7 @@ export class Productos extends Entity {
     itemType: 'object',
     required: false
   })
-  inventarios?: object[]
+  inventarios?: Inventarios[]
 
   @property({
     type: 'boolean',
@@ -83,6 +86,14 @@ export class Productos extends Entity {
     required: false
   })
   subProductos?: object[]
+
+
+
+
+  @property({
+    type:'number'
+  })
+  porcentajeGanancia?:number
 
   @hasOne(() => ProductoPersonalizado)
   productoPersonalizado: ProductoPersonalizado;

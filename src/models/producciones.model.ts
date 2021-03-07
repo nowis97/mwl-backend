@@ -1,31 +1,33 @@
 import {Entity, model, property} from '@loopback/repository';
-import {Historial, MateriaPrimaNecesaria} from '../types';
+import {Historial, MateriaPrimaNecesaria, SubproductoProduccion} from '../types';
+import {Pedidos} from './pedidos.model';
 
 @model()
 export class Producciones extends Entity {
   @property({
-    type: 'string',
+    type: 'array',
+    itemType:Pedidos,
     required: true,
   })
-  productoId: string;
+  pedidos: Pedidos[];
 
   @property({
     type: 'number',
     required: true,
   })
-  cantidadProducir: number;
+  cantidadTotalProducir: number;
 
   @property({
     type:'number',
     default:0,
   })
-  cantidadProducida?:number
+  cantidadTotalProducida?:number
+
 
   @property({
-    type: 'date',
-    defaultFn:"now"
+    type:'date',
   })
-  fechaProduccion?: string;
+  fechaEntrega?:string
 
   @property({
     type: 'array',
@@ -37,7 +39,13 @@ export class Producciones extends Entity {
     type: 'array',
     itemType: 'object',
   })
-  materiasPrimasNecesarias?: object[];
+  materiasPrimasNecesarias?: MateriaPrimaNecesaria[];
+
+  @property({
+    type:'array',
+    itemType: 'object'
+  })
+  subProductosProduccion?:SubproductoProduccion[]
 
   @property({
     type: 'string',

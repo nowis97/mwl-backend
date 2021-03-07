@@ -17,16 +17,18 @@ import {
   requestBody,
 } from '@loopback/rest';
 import {ProductoPersonalizado, Productos} from '../models';
-import {InventarioRepository, ProductosRepository} from '../repositories';
+import {InventarioRepository, ProductosRepository, RecetarioRepository} from '../repositories';
 import {base64File,createorUpdateFile} from '../helpers/files';
-import {Producto} from '../types';
+import {Inventarios, Producto, Subproducto} from '../types';
 
 export class ProductosController {
   constructor(
     @repository(ProductosRepository)
     public productosRepository : ProductosRepository,
     @repository(InventarioRepository)
-    public inventarioRepository : InventarioRepository
+    public inventarioRepository : InventarioRepository,
+    @repository(RecetarioRepository)
+    public recetarioRepository: RecetarioRepository
 
   ) {}
 
@@ -53,9 +55,10 @@ export class ProductosController {
               "subCategoria":{type:"string"},
               "descripcion":{type:"string"},
               "imagenRuta":{type:"object"},
-              "inventario":{type:"array"},
               "campos":{type:"array"},
-              "subproductos":{type:"array"}
+              "subproductos":{type:"array"},
+              "porcentajeGanancia":{type:"number"},
+              "agregados":{type:"array"}
             }
           },
         },
@@ -71,19 +74,32 @@ export class ProductosController {
       // @ts-ignore
       ext = ob.type.split('/')[1];
     }
+
+    const costoTotalProducto =  (await this.getCostoTotalInventario(producto.inventario)) +
+      (await this.getCostoTotalReceta(producto.receta)) +
+      (await this.getCostoTotalSubproductos(producto.subProductos as Subproducto[]))
+
+    //const razonGanancia = 1 + (producto.porcentajeGanancia/100);
+    const razonUtilidad = (producto.precio - costoTotalProducto) / costoTotalProducto
+
+
     const productoCreated = await this.productosRepository.create(
       new Productos(
         {
           nombre:producto.nombre,
           descripcion:producto.descripcion,
-          precio:producto.precio,
+          precio:producto.precio || 0,
           stock:producto.stock,
           categoria:producto.categoria,
           subCategoria:producto.subCategoria,
           inventarios:producto.inventario,
-          subProductos:producto.subproductos,
+          subProductos:producto.subProductos,
           esSubproducto:producto.esSubproducto,
-          receta:producto.receta
+          receta:producto.receta,
+          costo:costoTotalProducto,
+          porcentajeGanancia: Number(razonUtilidad.toFixed(5)) ?? 0
+
+
         }));
     if (producto.campos)
       await this.productosRepository
@@ -103,14 +119,10 @@ export class ProductosController {
         await this.productosRepository.updateById(productoCreated.getId(),{imagenRuta:nameFile});
       }
 
-
-  /*
-    for (const value of producto.inventario) {
-      const materiaPrima = await this.inventarioRepository.findById(value.id);
-      await this.inventarioRepository.updateById(value.id,{ cantidad: materiaPrima.cantidad - value.cantidad })
-    }*/
     return productoCreated;
   }
+
+
 
   @get('/productos/count', {
     responses: {
@@ -229,7 +241,19 @@ export class ProductosController {
     @param.path.string('id') id: string,
     @requestBody() producto: Producto,
   ): Promise<void> {
-    await this.productosRepository.productoPersonalizado(id).patch({campos: producto.productoPersonalizado?.campos})
+    if (producto.productoPersonalizado) {
+      let productoPersonalizado;
+      try {
+        productoPersonalizado = await this.productosRepository.productoPersonalizado(id).get();
+        await this.productosRepository.productoPersonalizado(id).patch({campos: producto.productoPersonalizado?.campos ? producto.productoPersonalizado?.campos : []})
+      } catch (e) {
+        if (producto.campos)
+        await this.productosRepository.productoPersonalizado(id).create(new ProductoPersonalizado({campos: producto.productoPersonalizado?.campos ? producto.productoPersonalizado?.campos : []}))
+
+      }
+    }
+
+
 
     delete producto.productoPersonalizado;
     delete producto.campos;
@@ -251,10 +275,17 @@ export class ProductosController {
 
       }
 
-
-
-
     }
+
+    const costoTotalProducto =  (await this.getCostoTotalInventario(producto.inventario)) +
+      (await this.getCostoTotalReceta(producto.receta)) +
+      (await this.getCostoTotalSubproductos(producto.subProductos as Subproducto[]))
+
+
+    producto.costo = costoTotalProducto
+    const razonUtilidad = (producto.precio - (producto.costo ?? 0)) / (producto.costo ?? 0);
+    producto.porcentajeGanancia = Number(razonUtilidad.toFixed(5));
+
 
     await this.productosRepository.replaceById(id,producto);
   }
@@ -268,6 +299,44 @@ export class ProductosController {
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.productosRepository.deleteById(id);
-    //await this.productosRepository.productoPersonalizado(id).delete();
+    await this.productosRepository.productoPersonalizado(id).delete();
   }
+
+  async getCostoTotalReceta(idReceta: string):Promise<number>{
+    if (!idReceta) return 0;
+    const receta = await this.recetarioRepository.findById(idReceta);
+    if (!receta?.inventario) return 0;
+
+    return this.getCostoTotalInventario(receta.inventario as Inventarios[]);
+  }
+
+  async getCostoTotalInventario(materiasPrimas: Inventarios[]):Promise<number>{
+
+    let costoTotal = 0;
+    if (!materiasPrimas) return costoTotal;
+    for (const materiaPrimaNecesaria of materiasPrimas) {
+      const materiaPrima = await this.inventarioRepository.findById(materiaPrimaNecesaria.id);
+      // @ts-ignore
+      costoTotal += materiaPrimaNecesaria.cantidad * materiaPrima.costoUnitario;
+
+    }
+    return costoTotal;
+  }
+
+  async getCostoTotalSubproductos(subProductosNecesarios:Subproducto[]){
+    let costoTotal=0
+    if (!subProductosNecesarios) return costoTotal;
+
+    for (const subProductoNecesario of subProductosNecesarios) {
+      const producto = await this.findById(subProductoNecesario.id);
+      costoTotal += (producto?.costo ?? 0) * subProductoNecesario.cantidad;
+
+    }
+    return costoTotal;
+
+  }
+
+
+
 }
+

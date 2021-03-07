@@ -41,6 +41,7 @@ export class Inventario extends Entity {
   @property({
     type: 'number',
     required: false,
+    default:0
   })
   costoUnitario?: number;
 

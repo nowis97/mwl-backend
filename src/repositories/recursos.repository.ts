@@ -1,18 +1,16 @@
 import {DefaultCrudRepository} from '@loopback/repository';
-import {Clientes, ClientesRelations} from '../models';
+import {Recursos, RecursosRelations} from '../models';
 import {MwlDataSource} from '../datasources';
 import {inject} from '@loopback/core';
 
-export class ClientesRepository extends DefaultCrudRepository<
-  Clientes,
-  typeof Clientes.prototype.id,
-  ClientesRelations
+export class RecursosRepository extends DefaultCrudRepository<
+  Recursos,
+  typeof Recursos.prototype.id,
+  RecursosRelations
 > {
   constructor(
     @inject('datasources.mwl') dataSource: MwlDataSource,
   ) {
-    super(Clientes, dataSource);
+    super(Recursos, dataSource);
   }
-
-
 }

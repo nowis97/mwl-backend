@@ -80,8 +80,28 @@ export class ClientesController {
   })
   async find(
     @param.filter(Clientes) filter?: Filter<Clientes>,
-  ): Promise<Clientes[]> {
-    return this.clientesRepository.find(filter);
+  ): Promise<unknown> {
+
+     return this.clientesRepository.find(filter);
+
+
+    /* const res = await this.clientesRepository.dataSource.execute('Clientes', 'find', {});
+
+     const ress = await res.toArray();
+     return res;
+     */
+
+
+    /*const result = await new Promise((resolve, reject) => {
+      // @ts-ignore
+      this.clientesRepository.dataSource.connector.execute('Clientes', 'find', {},
+        (err: any, data: any) => {
+          if (err) reject(err);
+          else resolve(data.toArray());
+        });
+    });
+
+    return result;*/
   }
 
   @patch('/clientes', {

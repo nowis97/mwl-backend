@@ -1,5 +1,7 @@
-import {Entity, model, property, hasOne} from '@loopback/repository';
+import {Entity, model, property, hasOne, belongsTo} from '@loopback/repository';
 import {ProductoPersonalizado} from './producto-personalizado.model';
+import {Recetario} from './recetario.model';
+import {Inventarios} from '../types';
 
 @model()
 export class Productos extends Entity {
@@ -19,6 +21,7 @@ export class Productos extends Entity {
   @property({
     type: 'number',
     required: false,
+    default:0
   })
   stock?: number;
 
@@ -52,12 +55,7 @@ export class Productos extends Entity {
 
   @property({
     type: 'string',
-    required: false,
-  })
-  receta?: string;
-
-  @property({
-    type: 'string',
+    default: 'Creado'
   })
   estado?: string;
 
@@ -69,29 +67,39 @@ export class Productos extends Entity {
   id?: string;
 
   @property({
-    type:'array',
-    itemType:'object',
-    required:true
+    type: 'array',
+    itemType: 'object',
+    required: false
   })
-  inventarios:object[]
+  inventarios?: Inventarios[]
 
   @property({
-    type:'boolean',
+    type: 'boolean',
     default: false
   })
-  esSubproducto:boolean
+  esSubproducto: boolean
 
 
   @property({
-    type:'array',
-    itemType:'object',
-    required:false
+    type: 'array',
+    itemType: 'object',
+    required: false
   })
-  subProductos?:object[]
+  subProductos?: object[]
+
+
+
+
+  @property({
+    type:'number'
+  })
+  porcentajeGanancia?:number
 
   @hasOne(() => ProductoPersonalizado)
   productoPersonalizado: ProductoPersonalizado;
 
+  @belongsTo(() => Recetario, {name: 'recetario'})
+  receta: string;
 
   constructor(data?: Partial<Productos>) {
     super(data);

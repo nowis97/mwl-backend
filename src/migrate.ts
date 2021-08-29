@@ -6,6 +6,7 @@ export async function migrate(args: string[]) {
 
   const app = new MadewithloveBackendApplication();
   await app.boot();
+
   await app.migrateSchema({existingSchema});
 
   // Connectors usually keep a pool of opened connections,

@@ -10,9 +10,9 @@ export class Clientes extends Entity {
 
   @property({
     type: 'string',
-    required: true,
+    required: false,
   })
-  usuarioInstagram: string;
+  usuarioInstagram?: string;
 
   @property({
     type: 'string',

@@ -27,6 +27,7 @@ export class MwlDataSource extends juggler.DataSource
     @inject('datasources.config.mwl', {optional: true})
     dsConfig: object = config,
   ) {
+
     super(dsConfig);
   }
 }

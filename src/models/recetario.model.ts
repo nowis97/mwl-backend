@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {Inventario} from './inventario.model';
 
 @model()
 export class Recetario extends Entity {
@@ -10,16 +11,9 @@ export class Recetario extends Entity {
 
   @property({
     type: 'string',
-    required: true,
+    required: false,
   })
-  detalles: string;
-
-  @property({
-    type: 'array',
-    itemType: 'object',
-    required: true
-  })
-  inventario?: object[]
+  detalles?: string;
 
   @property({
     type: 'string',
@@ -27,6 +21,14 @@ export class Recetario extends Entity {
     generated: true,
   })
   id?: string;
+
+
+  @property({
+    type: 'array',
+    itemType: 'object',
+    required: false
+  })
+  inventario?: object[]
 
   constructor(data?: Partial<Recetario>) {
     super(data);

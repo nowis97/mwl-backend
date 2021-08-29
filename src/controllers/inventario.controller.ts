@@ -47,10 +47,12 @@ export class InventarioController {
     })
     inventario: Omit<Inventario, 'id'>,
   ): Promise<Inventario> {
-    return this.inventarioRepository.create(new Inventario(
-      {costoUnitario:roundTo((inventario.precio/inventario.cantidad),2),
-      ...inventario
-      }));
+
+    const costoUnitario = roundTo((inventario.precio / inventario.cantidad),2);
+
+    inventario.costoUnitario = costoUnitario || 0;
+
+    return this.inventarioRepository.create(inventario);
 
   }
 

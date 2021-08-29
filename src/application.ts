@@ -8,9 +8,14 @@ import {RepositoryMixin} from '@loopback/repository';
 import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
-import {MySequence} from './sequence';
-import {FILE_UPLOAD_SERVICE, STORAGE_DIRECTORY} from './keys';
-import multer from 'multer';
+import {MySequence} from './sequence-middleware';
+import {AuthenticationComponent} from '@loopback/authentication';
+import {JWTAuthenticationComponent, UserServiceBindings} from '@loopback/authentication-jwt';
+import {MwlDataSource} from './datasources';
+import {CustomUserService} from './services/jwt-usuarios.service';
+import {UsuarioRepository} from './repositories';
+import {AuthorizationServiceProvider} from './services/authorization.service';
+import {AuthorizationComponent, AuthorizationTags} from '@loopback/authorization';
 export {ApplicationConfig};
 
 export class MadewithloveBackendApplication extends BootMixin(
@@ -42,24 +47,20 @@ export class MadewithloveBackendApplication extends BootMixin(
         nested: true,
       },
     };
-  }
+    this.component(AuthenticationComponent);
+    this.component(JWTAuthenticationComponent);
+    this.component(AuthorizationComponent)
+    this.dataSource(MwlDataSource,UserServiceBindings.DATASOURCE_NAME);
+    this.bind(UserServiceBindings.USER_REPOSITORY).toClass(UsuarioRepository);
+    this.bind(UserServiceBindings.USER_SERVICE).toClass(CustomUserService)
+    this.bind('authorizationService.authorization-service')
+      .toProvider(AuthorizationServiceProvider)
+      .tag(AuthorizationTags.AUTHORIZER);
 
 
-  protected configureFileUpload(destination?: string) {
-    // Upload files to `dist/.sandbox` by default
-    destination = destination ?? path.join(__dirname, '../.uploads');
-    this.bind(STORAGE_DIRECTORY).to(destination);
-    const multerOptions: multer.Options = {
-      storage: multer.diskStorage({
-        destination,
-        // Use the original file name as is
-        filename: (req, file, cb) => {
-          cb(null, file.originalname);
-        },
-      }),
-    };
-    // Configure the file upload service with multer options
-    this.configure(FILE_UPLOAD_SERVICE).to(multerOptions);
+
+
+
   }
 
 }

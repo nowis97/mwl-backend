@@ -1,22 +1,19 @@
 import {ApplicationConfig, MadewithloveBackendApplication} from './application';
 import {RestBindings} from '@loopback/rest';
+import * as fs from 'fs';
 
 export * from './application';
 
 export async function main(options: ApplicationConfig = {}) {
-  /*options = {
-    rest:{
-      cors:{
-        exposedHeaders:['Access-Control-Expose-Headers','X-Total-Count','Content-Range']
-      },
-    },
-  };*/
 
   const app = new MadewithloveBackendApplication(options);
+
   await app.boot();
   await app.start();
   app.bind(RestBindings.REQUEST_BODY_PARSER_OPTIONS).to({limit:'50mb'});
+
   const url = app.restServer.url;
+
   console.log(`Server is running at ${url}`);
   console.log(`Try ${url}/ping`);
 
@@ -39,6 +36,7 @@ if (require.main === module) {
         // useful when used with OpenAPI-to-GraphQL to locate your application
         setServersFromRequest: true,
       },
+
     },
   };
   main(config).catch(err => {

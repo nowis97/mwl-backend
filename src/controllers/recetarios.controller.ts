@@ -18,7 +18,9 @@ import {
 } from '@loopback/rest';
 import {Recetario} from '../models';
 import {RecetarioRepository} from '../repositories';
+import {authenticate} from '@loopback/authentication';
 
+//@authenticate('jwt')
 export class RecetariosController {
   constructor(
     @repository(RecetarioRepository)
@@ -62,7 +64,6 @@ export class RecetariosController {
   ): Promise<Count> {
     return this.recetarioRepository.count(where);
   }
-
   @get('/recetario', {
     responses: {
       '200': {
